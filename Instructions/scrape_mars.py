@@ -3,6 +3,7 @@ def scrape():
     from bs4 import BeautifulSoup as bs
     import requests as r
     from splinter import Browser
+    import time
 
     nasa_info = {}
 
@@ -24,6 +25,7 @@ def scrape():
     #browser = Browser('chrome', **executable_path, headless=False)
     url_2 = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
     browser.visit(url_2)
+    time.sleep(5)
     html = browser.html
     soup = bs(html, 'html.parser')
     img = soup.find('article', class_="carousel_item")['style']
@@ -59,6 +61,7 @@ def scrape():
     #print(soup.prettify())
     images = soup.find_all('a', class_= "itemLink product-item")
     #print(images)
+    hemisphere_image_urls = []
     for image in images:
         title = image.text
         img = image['href']
@@ -71,7 +74,11 @@ def scrape():
         img_url = main_url + img_url_raw
         #print(img_url)   
         
-        nasa_info["img_title"] = title
-        nasa_info["img_url"] = img_url
-
+        hemisphere_image_urls.append({"title": title,
+        "img_url": img_url})
+        
+        nasa_info["hemisphere_image_urls"] = hemisphere_image_urls
+    
+    browser.quit()
+    
     return nasa_info
